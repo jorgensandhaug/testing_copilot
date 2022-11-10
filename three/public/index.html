@@ -1,0 +1,231 @@
+<!-- Render a three.js scene with a red cube with a black outline that can releases blue circle particles when you hold the key "T"-->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Three.js test</title>
+    <style>
+      body {
+        margin: 0;
+      }
+      canvas {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <script
+      async
+      src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"
+    ></script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.146.0/build/three.module.js",
+          "OrbitControls": "https://unpkg.com/three/examples/jsm/controls/OrbitControls.js",
+          "TransformControls": "https://unpkg.com/three/examples/jsm/controls/TransformControls.js",
+          "OutlinePass": "https://unpkg.com/three/examples/jsm/postprocessing/OutlinePass.js",
+          "EffectComposer": "https://unpkg.com/three/examples/jsm/postprocessing/EffectComposer.js",
+          "RenderPass": "https://unpkg.com/three/examples/jsm/postprocessing/RenderPass.js"
+        }
+      }
+    </script>
+
+    <script type="module">
+      import * as THREE from "three";
+      import { OrbitControls } from "OrbitControls";
+      import { TransformControls } from "TransformControls";
+      import { OutlinePass } from "OutlinePass";
+      import { EffectComposer } from "EffectComposer";
+      import { RenderPass } from "RenderPass";
+
+      import dat from "https://cdn.skypack.dev/dat.gui";
+
+      // three.js spinning globe with real world map
+      // https://threejs.org/examples/#webgl_globe_realistic
+
+      // THREE JS
+      // Particles that look like stars in space
+      // https://threejs.org/examples/#webgl_points_sprites
+
+      const scene2 = new THREE.Scene();
+      const camera2 = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+      );
+      const renderer2 = new THREE.WebGLRenderer();
+      renderer2.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer2.domElement);
+
+      // CAMERA
+      camera2.position.z = 5;
+      camera2.position.y = 2;
+
+      // CONTROLS
+      const controls2 = new OrbitControls(camera2, renderer2.domElement);
+      controls2.enableDamping = true;
+      controls2.enablePan = false;
+
+      // LIGHTS
+      const ambientLight2 = new THREE.AmbientLight(0xffffff, 0.75);
+      scene2.add(ambientLight2);
+
+      const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.5);
+      directionalLight2.position.set(0, 1, 0);
+      scene2.add(directionalLight2);
+
+      const pointLight2 = new THREE.PointLight(0xffffff, 0.5);
+      pointLight2.position.set(0, 0, 0);
+      scene2.add(pointLight2);
+
+      // PARTICLES
+      const particlesGeometry = new THREE.BufferGeometry();
+      const particlesMaterial = new THREE.PointsMaterial({
+        size: 0.1,
+        color: 0xffffff,
+      });
+
+      const particlesPositions = [];
+      const particlesCount = 10000;
+
+      for (let i = 0; i < particlesCount; i++) {
+        const x = (Math.random() - 0.5) * 10;
+        const y = (Math.random() - 0.5) * 10;
+        const z = (Math.random() - 0.5) * 10;
+
+        particlesPositions.push(x, y, z);
+      }
+
+      particlesGeometry.setAttribute(
+        "position",
+        new THREE.Float32BufferAttribute(particlesPositions, 3)
+      );
+
+      const particles = new THREE.Points(
+        particlesGeometry,
+        particlesMaterial
+      );
+      scene2.add(particles);
+
+      // GLOBE
+      const globeRadius2 = 0.5;
+      const globeWidthSegments2 = 64;
+      const globeHeightSegments2 = 64;
+      const globe2 = new THREE.Mesh(
+        new THREE.SphereGeometry(
+          globeRadius2,
+          globeWidthSegments2,
+          globeHeightSegments2
+        ),
+        new THREE.MeshStandardMaterial({
+          color: 0x00ff00,
+          roughness: 0.75,
+          metalness: 0.25,
+          wireframe: false,
+        })
+      );
+      globe2.receiveShadow = true;
+      globe2.castShadow = true;
+      scene2.add(globe2);
+
+      // GLOBE MAP
+      const loader2 = new THREE.TextureLoader();
+      loader2.load(
+        "https://threejsfundamentals.org/threejs/resources/images/world.jpg",
+        (texture) => {
+          const material = new THREE.MeshStandardMaterial({
+            map: texture,
+            roughness: 0.75,
+            metalness: 0.25,
+            wireframe: false,
+          });
+          globe2.material = material;
+        }
+      );
+
+      // GUI
+      const gui = new dat.GUI();
+      const guiFolder = gui.addFolder("Globe");
+      guiFolder.open();
+
+      const guiFolder2 = gui.addFolder("Particles");
+      guiFolder2.open();
+
+      const guiFolder3 = gui.addFolder("Globe 2");
+      guiFolder3.open();
+
+      const guiFolder4 = gui.addFolder("Particles 2");
+      
+      // Define controls
+      const controls = {
+        globe: {
+          rotationSpeed: 0.001,
+          wireframe: false,
+          color: 0x00ff00,
+        },
+        particles: {
+          rotationSpeed: 0.001,
+          color: 0xffffff,
+        },
+        globe2: {
+          rotationSpeed: 0.001,
+          wireframe: false,
+          color: 0x00ff00,
+        },
+        particles2: {
+          rotationSpeed: 0.001,
+          color: 0xffffff,
+        },
+      };
+
+      // Add controls
+      guiFolder
+        .add(controls.globe, "rotationSpeed", 0, 0.01)
+        .name("Rotation Speed");
+      guiFolder.add(controls.globe, "wireframe").name("Wireframe");
+      guiFolder.addColor(controls.globe, "color").name("Color");
+
+      guiFolder2
+        .add(controls.particles, "rotationSpeed", 0, 0.01)
+        .name("Rotation Speed");
+      guiFolder2.addColor(controls.particles, "color").name("Color");
+
+      guiFolder3
+        .add(controls.globe2, "rotationSpeed", 0, 0.01)
+        .name("Rotation Speed");
+      guiFolder3.add(controls.globe2, "wireframe").name("Wireframe");
+      guiFolder3.addColor(controls.globe2, "color").name("Color");
+
+      guiFolder4
+        .add(controls.particles2, "rotationSpeed", 0, 0.01)
+        .name("Rotation Speed");
+      guiFolder4.addColor(controls.particles2, "color").name("Color");
+
+      // ANIMATE
+      const animate = function () {
+        requestAnimationFrame(animate);
+
+        // GLOBE
+        globe2.rotation.y += controls.globe.rotationSpeed;
+        globe2.material.wireframe = controls.globe.wireframe;
+        globe2.material.color.set(controls.globe.color);
+
+        // PARTICLES
+        particles.rotation.y += controls.particles.rotationSpeed;
+        particles.material.color.set(controls.particles.color);
+
+        // RENDER
+        renderer2.render(scene2, camera2);
+      };
+
+      animate();
+      
+      guiFolder4.open();
+
+    </script>
+  </body>
+</html>
