@@ -98,22 +98,22 @@ def play(filename):
 
 
 if __name__ == "__main__":
-    # # Initialize the threads
-    # record_thread = Thread(target=record)
-    # input_thread = Thread(target=record_input)
+    # Initialize the threads
+    record_thread = Thread(target=record)
+    input_thread = Thread(target=record_input)
 
-    # # print the instructions
-    # print("Press f to stop recording")
+    # print the instructions
+    print("Press f to stop recording")
 
-    # # Start the threads
-    # record_thread.start()
-    # input_thread.start()
+    # Start the threads
+    record_thread.start()
+    input_thread.start()
 
-    # # Wait for the threads to finish
-    # record_thread.join()
+    # Wait for the threads to finish
+    record_thread.join()
 
-    # # Play the audio file
-    # play("output.wav")
+    # Play the audio file
+    play("output.wav")
     
 
     # Set options
@@ -123,9 +123,19 @@ if __name__ == "__main__":
     # Transcribe the audio file
     # Print now transcribing message
     print("Now transcribing: output.wav")
-    model = whisper.load_model("medium")
+    model = whisper.load_model("large-v2")
     result = model.transcribe("output.wav", **translate_options)
     print("Transcribed result", result["text"])
+
+    # Write result to file
+    with open("result.txt", "w") as f:
+        f.write(result["text"])
+
+    # Print stopped transcribing message
+    print("Stopped transcribing: output.wav")
+
+    
+    
 
 
 
