@@ -13,7 +13,8 @@ PAGE = BROWSER.new_page()
 
 def get_input_box():
     """Get the child textarea of `PromptTextarea__TextareaWrapper`"""
-    return PAGE.query_selector("div[class*='PromptTextarea__TextareaWrapper']").query_selector("textarea")
+    print(PAGE)
+    return PAGE.query_selector("textarea")
 
 def is_logged_in():
     try:
@@ -33,7 +34,9 @@ def send_message(message):
 
 def get_last_message():
     """Get the latest message"""
-    page_elements = PAGE.query_selector_all("div[class*='ConversationItem__Message']")
+    #page_elements = PAGE.query_selector_all("div[class*='ConversationItem__Message']")
+    page_elements = PAGE.query_selector_all("div[class*='request-:']")
+
     last_element = page_elements[-1]
     return last_element.inner_text()
 

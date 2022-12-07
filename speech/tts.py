@@ -16,7 +16,7 @@ def text_to_audio(text):
     waveforms = hifi_gan.decode_batch(mel_output)
 
     # Save the waverform as mp3 file using .mp3 extension
-    torchaudio.save("tts.wav", waveforms[0].cpu(), tacotron2.hparams.sample_rate)
+    torchaudio.save("tts.wav", waveforms.squeeze(1), tacotron2.hparams.sample_rate)
     # return "Saved to " + 'tts.wav'
 
 
