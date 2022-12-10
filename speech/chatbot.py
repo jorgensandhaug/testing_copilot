@@ -15,29 +15,26 @@ translate_options = dict(task="translate", **options)
 def transcribe():
     # Transcribe the audio file
     # Print now transcribing message
-    print("Now transcribing: output.wav")
-    model = whisper.load_model("tiny")
-    result = model.transcribe("output.wav", **translate_options)
+    print("Now transcribing: output.mp3")
+
+
+    model = whisper.load_model("large")
+    result = model.transcribe("output.mp3", **translate_options)
     print("Transcribed result", result["text"])
     # Print stopped transcribing message
-    print("Stopped transcribing: output.wav")
+    print("Stopped transcribing: output.mp3")
     return result["text"]
 
     
     
 
+template = "$chat\nPlease respond as concisely as possible, and dont reply with anything other than the concrete response."
 
 if __name__ == "__main__":
     start_browser()
     while True:
         record()
         message = transcribe()
-        response = chat(message)
-        print(response)
+        response = chat(template.replace("$chat", message))
+        #print(response)
         text_to_audio(response)
-        play("tts.wav")
-
-
-
-
-

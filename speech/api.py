@@ -5,7 +5,7 @@ from playwright.sync_api import sync_playwright
 PLAY = sync_playwright().start()
 BROWSER = PLAY.firefox.launch_persistent_context(
     user_data_dir="/tmp/playwright",
-    headless=False,
+    headless=True,
 )
 
 
